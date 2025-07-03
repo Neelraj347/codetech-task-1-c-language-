@@ -1,0 +1,86 @@
+// code for FILE HANDLING
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    FILE *fp;
+    char buffer[512];
+    int c;
+    int line_count = 0;
+
+    
+    fp = fopen("mydata.txt", "w+"); // w+ allows writing and reading
+    if (fp == NULL) {
+        perror("Unable to create file");
+        exit(EXIT_FAILURE);
+    }
+
+    fputs("Hello! This is file handling in C.\n", fp);
+    fputs("Practicing file write and read operations.\n", fp);
+    fputs("Adding a third line for clarity.\n", fp);
+    rewind(fp); // move cursor to beginning for reading
+
+    printf("✅ File 'mydata.txt' created and data written.\n\n");
+
+    
+    printf("Reading file character by character:\n");
+    while ((c = fgetc(fp)) != EOF) {
+        putchar(c);
+    }
+    fclose(fp);
+
+    
+    fp = fopen("mydata.txt", "a+"); // append + read
+    if (fp == NULL) {
+        perror("Unable to open file for appending");
+        exit(EXIT_FAILURE);
+    }
+
+    fputs("Appended: This is a new line in the file.\n", fp);
+    printf("\n✅ Data appended to file successfully.\n");
+
+    rewind(fp);
+    printf("\nReading file line by line after append:\n");
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        printf("Line %d: %s", ++line_count, buffer);
+    }
+    fclose(fp);
+
+    
+    FILE *src_fp, *dest_fp;
+    size_t nread;
+
+    src_fp = fopen("mydata.txt", "rb");
+    if (src_fp == NULL) {
+        perror("Unable to open source file for binary copy");
+        exit(EXIT_FAILURE);
+    }
+
+    dest_fp = fopen("mydata_backup.bin", "wb");
+    if (dest_fp == NULL) {
+        perror("Unable to create destination file for binary copy");
+        fclose(src_fp);
+        exit(EXIT_FAILURE);
+    }
+
+    while ((nread = fread(buffer, 1, sizeof(buffer), src_fp)) > 0) {
+        fwrite(buffer, 1, nread, dest_fp);
+    }
+
+    fclose(src_fp);
+    fclose(dest_fp);
+
+    printf("\n✅ Binary copy created as 'mydata_backup.bin'.\n");
+
+    
+    if (remove("mydata_backup.bin") == 0) {
+        printf("\n✅ Backup file deleted successfully.\n");
+    } else {
+        perror("Error deleting backup file");
+    }
+
+    return 0;
+}
+
