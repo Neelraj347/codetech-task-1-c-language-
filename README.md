@@ -5,7 +5,7 @@ ID:CT04DF2936
 Domain:C LANGUAGE
 Duration:5 JUNE 2025 TO 5 JULY 2025
 Mentor:NEELA SANTHOSH KUMAR
-Internship Report: File Handling in C Language(TAK 1)
+Internship Report: File Handling in C Language(TAsk 1)
 1️⃣ Introduction
 During my internship, I learned and practiced File Handling in C language, which is a crucial concept for storing and managing data permanently. Unlike console-based inputs and outputs, file handling allows us to store data on disk and retrieve it later, making it essential for real-world applications like report generation, user data management, and data analysis.
 
