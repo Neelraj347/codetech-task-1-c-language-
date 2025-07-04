@@ -4,83 +4,97 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void createFile(const char *filename) {
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Error creating file!\n");
+        return;
+    }
+    printf("File '%s' created successfully.\n", filename);
+    fclose(fp);
+}
+
+void writeFile(const char *filename) {
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Error opening file for writing!\n");
+        return;
+    }
+
+    char data[1000];
+    printf("Enter data to write to the file (end with ~ on a new line):\n");
+    while (fgets(data, sizeof(data), stdin)) {
+        if (data[0] == '~') break;
+        fputs(data, fp);
+    }
+
+    printf("Data written to '%s' successfully.\n", filename);
+    fclose(fp);
+}
+
+void appendFile(const char *filename) {
+    FILE *fp = fopen(filename, "a");
+    if (fp == NULL) {
+        printf("Error opening file for appending!\n");
+        return;
+    }
+
+    char data[1000];
+    printf("Enter data to append (end with ~ on a new line):\n");
+    while (fgets(data, sizeof(data), stdin)) {
+        if (data[0] == '~') break;
+        fputs(data, fp);
+    }
+
+    printf("Data appended to '%s' successfully.\n", filename);
+    fclose(fp);
+}
+
+void readFile(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("Error opening file for reading!\n");
+        return;
+    }
+
+    char ch;
+    printf("Contents of '%s':\n", filename);
+    while ((ch = fgetc(fp)) != EOF) {
+        putchar(ch);
+    }
+
+    fclose(fp);
+}
+
 int main() {
-    FILE *fp;
-    char buffer[512];
-    int c;
-    int line_count = 0;
+    char filename[100];
+    int choice;
 
-    
-    fp = fopen("mydata.txt", "w+"); // w+ allows writing and reading
-    if (fp == NULL) {
-        perror("Unable to create file");
-        exit(EXIT_FAILURE);
-    }
+    printf("Enter file name: ");
+    scanf("%s", filename);
+    getchar();  // consume newline left by scanf
 
-    fputs("Hello! This is file handling in C.\n", fp);
-    fputs("Practicing file write and read operations.\n", fp);
-    fputs("Adding a third line for clarity.\n", fp);
-    rewind(fp); // move cursor to beginning for reading
+    do {
+        printf("\n--- FILE OPERATIONS MENU ---\n");
+        printf("1. Create File\n");
+        printf("2. Write to File\n");
+        printf("3. Append to File\n");
+        printf("4. Read File\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar();  // consume newline
 
-    printf("✅ File 'mydata.txt' created and data written.\n\n");
+        switch (choice) {
+            case 1: createFile(filename); break;
+            case 2: writeFile(filename); break;
+            case 3: appendFile(filename); break;
+            case 4: readFile(filename); break;
+            case 5: printf("Exiting program.\n"); break;
+            default: printf("Invalid choice! Try again.\n");
+        }
 
-    
-    printf("Reading file character by character:\n");
-    while ((c = fgetc(fp)) != EOF) {
-        putchar(c);
-    }
-    fclose(fp);
-
-    
-    fp = fopen("mydata.txt", "a+"); // append + read
-    if (fp == NULL) {
-        perror("Unable to open file for appending");
-        exit(EXIT_FAILURE);
-    }
-
-    fputs("Appended: This is a new line in the file.\n", fp);
-    printf("\n✅ Data appended to file successfully.\n");
-
-    rewind(fp);
-    printf("\nReading file line by line after append:\n");
-    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
-        printf("Line %d: %s", ++line_count, buffer);
-    }
-    fclose(fp);
-
-    
-    FILE *src_fp, *dest_fp;
-    size_t nread;
-
-    src_fp = fopen("mydata.txt", "rb");
-    if (src_fp == NULL) {
-        perror("Unable to open source file for binary copy");
-        exit(EXIT_FAILURE);
-    }
-
-    dest_fp = fopen("mydata_backup.bin", "wb");
-    if (dest_fp == NULL) {
-        perror("Unable to create destination file for binary copy");
-        fclose(src_fp);
-        exit(EXIT_FAILURE);
-    }
-
-    while ((nread = fread(buffer, 1, sizeof(buffer), src_fp)) > 0) {
-        fwrite(buffer, 1, nread, dest_fp);
-    }
-
-    fclose(src_fp);
-    fclose(dest_fp);
-
-    printf("\n✅ Binary copy created as 'mydata_backup.bin'.\n");
-
-    
-    if (remove("mydata_backup.bin") == 0) {
-        printf("\n✅ Backup file deleted successfully.\n");
-    } else {
-        perror("Error deleting backup file");
-    }
+    } while (choice != 5);
 
     return 0;
 }
-
